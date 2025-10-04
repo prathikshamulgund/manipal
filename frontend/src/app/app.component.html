@@ -1,0 +1,113 @@
+<div class="app-container">
+  <header class="header">
+    <h1>⛏️ AI Mining Operations Co-Pilot</h1>
+    <p class="subtitle">Powered by Llama 3.3 70B via Groq Cloud AI</p>
+  </header>
+
+  <div class="main-content">
+    <div class="left-panel">
+      <div class="chat-container">
+        <div class="chat-header">
+          <h2>AI Assistant</h2>
+          <span class="status-indicator"></span>
+        </div>
+
+        <div class="messages-container">
+          <div *ngFor="let message of messages" 
+               [class]="'message ' + (message.sender === 'user' ? 'message-user' : 'message-ai')">
+            <div class="message-content">
+              <div class="message-text">{{ message.text }}</div>
+              <div class="message-time">{{ message.timestamp | date: 'short' }}</div>
+            </div>
+          </div>
+          
+          <div *ngIf="isLoading" class="message message-ai">
+            <div class="message-content">
+              <div class="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input-container">
+          <input 
+            type="text" 
+            [(ngModel)]="userInput"
+            (keyup.enter)="sendMessage()"
+            placeholder="Ask about fuel, maintenance, production, or emissions..."
+            class="chat-input"
+            [disabled]="isLoading"
+          />
+          <button 
+            (click)="sendMessage()" 
+            class="send-button"
+            [disabled]="isLoading || !userInput.trim()">
+            Send
+          </button>
+        </div>
+      </div>
+
+      <div class="alerts-panel">
+        <h3>🚨 Maintenance Alerts</h3>
+        <div class="alerts-list">
+          <div *ngFor="let alert of alerts" 
+               [class]="'alert-item ' + getAlertClass(alert.severity)">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-content">
+              <div class="alert-title">{{ alert.equipment_name }}</div>
+              <div class="alert-message">{{ alert.message }}</div>
+              <div class="alert-days" *ngIf="alert.days_until !== undefined">
+                {{ alert.days_until }} days remaining
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="alerts.length === 0" class="no-alerts">
+            ✅ No maintenance alerts
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="dashboard-section">
+        <h3>📊 Fuel Consumption Analysis</h3>
+        <div class="chart-container">
+          <canvas id="fuelChart"></canvas>
+        </div>
+      </div>
+
+      <div class="dashboard-section">
+        <h3>📈 Production Efficiency</h3>
+        <div class="chart-container">
+          <canvas id="productionChart"></canvas>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Equipment</div>
+          <div class="stat-value">{{ equipmentData.length }}</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-label">CO₂ Emissions</div>
+          <div class="stat-value">{{ carbonFootprint.co2_emissions_tons || 0 }} tons</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-label">Active Alerts</div>
+          <div class="stat-value alert-count">{{ alerts.length }}</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-label">SDG 13 Status</div>
+          <div class="stat-value status-text">{{ carbonFootprint.sdg_13_status || 'N/A' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
